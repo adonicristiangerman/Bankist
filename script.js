@@ -61,66 +61,72 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
+// Displays the movements of the account
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = '';
 
-// const currencies = new Map([
-//   ['USD', 'United States dollar'],
-//   ['EUR', 'Euro'],
-//   ['GBP', 'Pound sterling'],
-// ]);
+  movements.forEach(function (mov, i) {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+    const html = `<div class="movements__row">
+          <div class="movements__type movements__type--${type}">${
+      i + 1
+    } ${type}</div>
+          <div class="movements__date">3 days ago</div>
+          <div class="movements__value">RD$${Math.abs(mov)}</div>
+        </div>`;
 
-/////////////////////////////////////////////////
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
 
-/*
-let arr = ['a', 'b', 'c', 'd', 'e'];
+displayMovements(account1.movements);
 
-// SLICE: does not mutate the array
-console.log(arr.slice(2));
-console.log(arr.slice(2, 4));
-console.log(arr.slice(-2));
-console.log(arr.slice(-1));
-console.log(arr.slice(1, -2));
-console.log(arr.slice());
-
-// SPLICE: mutates the array and just leaves the values included as args on the method
-// console.log(arr.splice(2));
-
-// arr.splice(-1);
-console.log(arr);
-// arr.splice(1, 2);
-console.log(arr);
-
-// REVERSE: mutates the original array
-const arr2 = ['j', 'i', 'h', 'g', 'f'];
-console.log(arr2.reverse());
-
-// CONCAT
-const letters = arr.concat(arr2);
-console.log(letters);
-console.log([...arr, ...arr2]); //this is just another way of doing it
-
-// JOIN
-console.log(letters.join(' - '));
-*/
-
-/*
-// THE AT METHOD
-
-const arr = [23, 11, 64];
-console.log(arr[0]);
-console.log(arr.at(0));
-
-// getting the last element
-console.log(arr[arr.length - 1]);
-console.log(arr.slice(-1)[0]);
-
-// getting it with at
-console.log(arr.at(-1));
-*/
-
-/*
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `RD$${balance}`;
+};
+
+calcDisplayBalance(account1.movements);
+
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `RD$${incomes}`;
+
+  const withdrawals = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `RD$${Math.abs(withdrawals)}`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter(int => int >= 10)
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `RD$${interest}`;
+};
+
+calcDisplaySummary(account1.movements);
+
+// Creates usernames
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase();
+  });
+};
+
+createUsernames(accounts);
+
+const balance = movements.reduce((acc, cur) => {
+  return acc + cur;
+}, 0);
+console.log(balance);
