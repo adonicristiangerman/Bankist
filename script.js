@@ -87,7 +87,7 @@ const displayMovements = function (movements, sort = false) {
       i + 1
     } ${type}</div>
           <div class="movements__date">3 days ago</div>
-          <div class="movements__value">RD$${Math.abs(mov)}</div>
+          <div class="movements__value">RD$${Math.abs(mov).toFixed(2)}</div>
         </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -99,7 +99,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // Displays the account balance
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `RD$${acc.balance}`;
+  labelBalance.textContent = `RD${acc.balance.toFixed(2)}`;
 };
 
 // Displays the account summary
@@ -107,19 +107,19 @@ const calcDisplaySummary = function (acc) {
   const incomes = movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `RD$${incomes}`;
+  labelSumIn.textContent = `RD$${incomes.toFixed(2)}`;
 
   const withdrawals = movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `RD$${Math.abs(withdrawals)}`;
+  labelSumOut.textContent = `RD$${Math.abs(withdrawals).toFixed(2)}`;
 
   const interest = movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 10)
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `RD$${interest}`;
+  labelSumInterest.textContent = `RD$${interest.toFixed(2)}`;
 };
 
 // Creates usernames
@@ -152,7 +152,7 @@ btnLogin.addEventListener('click', function (e) {
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
+  // console.log(currentAccount);
   e.preventDefault();
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
@@ -199,7 +199,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add the movement
@@ -218,7 +218,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
@@ -241,5 +241,3 @@ btnSort.addEventListener('click', function (e) {
   displayMovements(currentAccount.movements, !sorted);
   sorted = !sorted;
 });
-
-console.log(23 === 23.0);
