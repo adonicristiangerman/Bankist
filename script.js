@@ -105,14 +105,17 @@ const displayMovements = function (acc, sort = false) {
     const date = new Date(movDate);
     const displayDate = formatMovementDate(date, acc.locale);
 
+    const formattedMov = new Intl.NumberFormat(acc.locale, {
+      style: 'currency',
+      currency: acc.currency,
+    }).format(movement);
+
     const html = `<div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
           <div class="movements__date">${displayDate}</div>
-          <div class="movements__value">RD$${Math.abs(movement).toFixed(
-            2
-          )}</div>
+          <div class="movements__value">${formattedMov}</div>
         </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -121,10 +124,22 @@ const displayMovements = function (acc, sort = false) {
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+// Function that formats the amounts
+const balanceFormatter = function (acc, toFormat) {
+  const balance = new Intl.NumberFormat(acc.locale, {
+    style: 'currency',
+    currency: acc.currency,
+  }).format(toFormat);
+
+  return balance;
+};
+
 // Displays the account balance
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `RD${acc.balance.toFixed(2)}`;
+  balanceFormatter(acc, acc.balance);
+
+  labelBalance.textContent = balanceFormatter(acc, acc.balance);
 };
 
 // Displays the account summary
@@ -132,19 +147,20 @@ const calcDisplaySummary = function (acc) {
   const incomes = movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `RD$${incomes.toFixed(2)}`;
+
+  labelSumIn.textContent = balanceFormatter(acc, incomes);
 
   const withdrawals = movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `RD$${Math.abs(withdrawals).toFixed(2)}`;
+  labelSumOut.textContent = balanceFormatter(acc, withdrawals);
 
   const interest = movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 10)
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `RD$${interest.toFixed(2)}`;
+  labelSumInterest.textContent = balanceFormatter(acc, interest);
 };
 
 // Creates usernames
