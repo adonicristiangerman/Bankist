@@ -79,7 +79,6 @@ const formatMovementDate = function (date, locale) {
   };
 
   const daysPassed = calcDaysPassed(new Date(), date);
-  console.log(daysPassed);
 
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
@@ -197,7 +196,6 @@ btnLogin.addEventListener('click', function (e) {
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value
   );
-  // console.log(currentAccount);
   e.preventDefault();
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
@@ -265,16 +263,18 @@ btnLoan.addEventListener('click', function (e) {
   const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // Add the movement
-    currentAccount.movements.push(amount);
+    setTimeout(function () {
+      // Add the movement
+      currentAccount.movements.push(amount);
 
-    // Add tranfer date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Add tranfer date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
 
-    inputLoanAmount.value = '';
+      inputLoanAmount.value = '';
+    }, 2500);
   }
 });
 
