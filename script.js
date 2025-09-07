@@ -185,11 +185,35 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+const startLogOutTimer = function () {
+  const tick = function () {
+    const minute = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    // In each call, print the remaining time to UI
+    labelTimer.textContent = `${minute}:${sec}`;
+
+    // When time 0, stop time and log out user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    time--;
+  };
+
+  // Set time to 5 minutes
+  let time = 10;
+
+  // Call the timer every second
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 // Event Handlers
-let currentAccount;
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+let currentAccount, timer;
 
 // Funcionality to Log In
 btnLogin.addEventListener('click', function (e) {
@@ -222,6 +246,13 @@ btnLogin.addEventListener('click', function (e) {
     // Clear the input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    // Add timer
+    if (timer) {
+      clearInterval(timer);
+    }
+
+    timer = startLogOutTimer();
 
     // Update UI
     updateUI(currentAccount);
